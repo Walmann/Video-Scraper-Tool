@@ -4,9 +4,12 @@ import os
 import sys
 
 import pathlib
-
-
 import argparse
+
+# TODO Auto update on start of script? Git pull or something.
+
+
+
 
 debugScript = False
 
@@ -35,9 +38,6 @@ if not args.Debug == None:
     debugScript = args.Debug
 
 URLS = json.load(open("./ThingsToDownload.json", encoding="UTF8"))
-
-# Save_Location = "H:\\Shares\Vaulter\\001 - Video"
-# Save_Location = "c:/temp/appPY"
 
 setDownloadLocation = ""
 
