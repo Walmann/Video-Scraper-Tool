@@ -175,6 +175,8 @@ for page_Entry in URLS:
             temp_Save_Location = Save_Location+"\\004 - NRK Arkivet\\" + sub_folder
         elif URLS[page_Entry][entries][1] == "YTChannels":
             temp_Save_Location = Save_Location+"\\006 - Youtube Kanaler\\" + sub_folder
+        elif URLS[page_Entry][entries][1] == "YTPlaylist":
+            temp_Save_Location = Save_Location+"\\006 - Youtube Spillelister\\" + sub_folder
         else:
             temp_Save_Location = Save_Location+"\\SORTERES\\"
 
@@ -232,7 +234,7 @@ for page_Entry in URLS:
                 "writeannotation": True,
                 "allow_multiple_audio_streams": True,
                 "live_from_start": True,
-                "skip_download": True,
+                # "skip_download": True,
                 "external_downloader_args": ['-loglevel quiet', '-hide_banner'],
                 "extractor_retries": 10,
                 "retries": 10,
