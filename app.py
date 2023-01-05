@@ -46,7 +46,7 @@ if not args.DoNotUpdate == None:
 if not RunUpdates == False: 
     repo = Repo('./')
     print("Checking for updates...")
-    repo.remotes.origin.pull()()
+    repo.remotes.origin.pull()
 
 
 
@@ -160,6 +160,8 @@ class loggerOutputs:
 
 
 logToFile("", clearlog=True)
+
+
 for page_Entry in URLS:
     # if not page_Entry == args.Category:
     if args.Category and not args.Category == page_Entry:
@@ -179,17 +181,17 @@ for page_Entry in URLS:
 
         # Create SaveLocation:
         if URLS[page_Entry][entries][1] == "S":
-            temp_Save_Location = Save_Location+"\\003 - Serier\\" + sub_folder
+            temp_Save_Location = Save_Location+"\\003 - Serier" + sub_folder
         elif URLS[page_Entry][entries][1] == "M":
-            temp_Save_Location = Save_Location+"\\002 - Film\\" + sub_folder
+            temp_Save_Location = Save_Location+"\\002 - Film" + sub_folder
         elif URLS[page_Entry][entries][1] == "NRKA":
-            temp_Save_Location = Save_Location+"\\004 - NRK Arkivet\\" + sub_folder
+            temp_Save_Location = Save_Location+"\\004 - NRK Arkivet" + sub_folder
         elif URLS[page_Entry][entries][1] == "YTChannels":
-            temp_Save_Location = Save_Location+"\\006 - Youtube Kanaler\\" + sub_folder
+            temp_Save_Location = Save_Location+"\\006 - Youtube Kanaler" + sub_folder
         elif URLS[page_Entry][entries][1] == "YTPlaylist":
-            temp_Save_Location = Save_Location+"\\006 - Youtube Spillelister\\" + sub_folder
+            temp_Save_Location = Save_Location+"\\006 - Youtube Spillelister" + sub_folder
         else:
-            temp_Save_Location = Save_Location+"\\SORTERES\\"
+            temp_Save_Location = Save_Location+"\\SORTERES"
 
         # TODO: Check if temp_Save_Location exists.
         if not os.path.exists(temp_Save_Location):
@@ -222,13 +224,14 @@ for page_Entry in URLS:
             "retries": 10,
             "logger": loggerOutputs,
             "consoletitle": True,
-            "download_archive": temp_Save_Location + "\\Videos.json"
+            "force_write_download_archive": True,
+            "download_archive": temp_Save_Location + "\\downloaded.txt",
         }
 
         if page_Entry == "nrk":
             # NRK always have the episode number in the Episode title, so no eposide_number needed.
             ydl_opts.update({
-                "outtmpl": temp_Save_Location + "\\%(series)s\\%(season)s\\%(episode)s\\%(episode)s.%(ext)s"
+                "outtmpl": temp_Save_Location + "\\%(series)s\\%(season)s\\S%(season)sE%(episode)s.%(ext)s"
             })
 
         elif page_Entry == "youtube":
@@ -240,15 +243,15 @@ for page_Entry in URLS:
         if debugScript:
             ydl_opts.update({
                 "force_write_download_archive": True,
-                "download_archive": temp_Save_Location,
+                "download_archive": temp_Save_Location + "\\downloaded.txt",
                 "simulate": True
             })
 
-        #Make sure download_archive exists:
-        if not os.path.exists(ydl_opts["download_archive"]):
-            pathlib.Path(ydl_opts["download_archive"]).mkdir(parents=True, exist_ok=True)
+        # #Make sure download_archive exists:
+        # if not os.path.exists(ydl_opts["download_archive"]):
+        #     pathlib.Path(ydl_opts["download_archive"]).mkdir(parents=True, exist_ok=True)
 
-        print()
+        # print()
 
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             error_code = ydl.download(download_URL)
