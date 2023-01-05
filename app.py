@@ -7,18 +7,12 @@ import pathlib
 import argparse
 from git.repo import Repo
 
-# TODO Auto update on start of script? Git pull or something.
-repo = Repo('./')
-print("Checking for updates...")
-gitFetch = repo.remotes.origin.fetch()
 
-xxx = repo.index.diff(None)
 
-for item in repo.index.diff(None):
-    print(item.a_path)
+
 
 debugScript = False
-
+RunUpdates = False
 
 # Initialize parser
 parser = argparse.ArgumentParser()
@@ -26,9 +20,11 @@ parser = argparse.ArgumentParser()
 # Adding optional argument
 # parser.add_argument("-h", "--help", help="Show Help")
 parser.add_argument("-rootdl", "--RootDownloadFolder", help='Root folder for all downloads. Example: "H:\\Shares\\Vaulter\\001 - Video" Remember to double backslash')
-parser.add_argument("-debug", "--Debug", action='store_true', help="Enable debug")
 parser.add_argument("-cat", "--Category", help="Only download from this selection inside ThingsToDownload.json. Useful for debugging.")
 
+#Debugging arguments
+parser.add_argument("-debug", "--Debug", action='store_true', help="Enable debug")
+parser.add_argument("-nu", "--DoNotUpdate", action='store_true', help="Do not pull changes from repo, as to not disturb development. Useful for debugging.")
 
 # Read arguments from command line
 args = parser.parse_args()
@@ -42,10 +38,19 @@ else:
 
 if not args.Debug == None:
     debugScript = args.Debug
+if not args.DoNotUpdate == None:
+    DoNotUpdate = args.DoNotUpdate
+
+
+# Check for updates
+if not RunUpdates == False: 
+    repo = Repo('./')
+    print("Checking for updates...")
+    repo.remotes.origin.pull()()
+
+
 
 URLS = json.load(open("./ThingsToDownload.json", encoding="UTF8"))
-
-setDownloadLocation = ""
 
 
 def logToFile(text, clearlog=False):
