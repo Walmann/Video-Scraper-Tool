@@ -184,64 +184,60 @@ for page_Entry in URLS:
         if not os.path.exists(temp_Save_Location):
             pathlib.Path(temp_Save_Location).mkdir(parents=True, exist_ok=True)
 
-        if page_Entry == "nrk":
-            ydl_opts = {
-                # "simulate": True,
-                # "outtmpl": "%(id)s%(ext)s",
-                # "noplaylist": True,
-                "quiet": True,
-                # "verbose": True,
-                # "no_verbose_header": True,
-                # "format": "bestvideo",
-                # "ignore_no_formats_error": True,
-                # "progress": True,
-                # "progress_hooks": [my_hook],
-                "ignoreerrors": True,
-                "no_warnings:": True,
-                # "extract_flat": True,
-                'prefer_ffmpeg': True,
-                # "ffmpeg_location": "dep/ffmpeg.exe",
-                "external_downloader_args": ['-loglevel quiet', '-hide_banner'],
-                "extractor_retries": 10,
-                "retries": 10,
-                "outtmpl": temp_Save_Location+"\\%(series)s\\%(season)s\\%(episode_number)s - %(episode)s.%(ext)s",
-                "logger": loggerOutputs,
-                "consoletitle": True
-            }
-        if page_Entry == "youtube":
-            ydl_opts = {
-                # "simulate": True,
-                # "outtmpl": "%(id)s%(ext)s",
-                # "noplaylist": True,
-                "quiet": True,
-                # "verbose": True,
-                # "no_verbose_header": True,
-                # "format": "bestvideo",
-                # "ignore_no_formats_error": True,
-                # "progress": True,
-                # "progress_hooks": [my_hook],
-                "ignoreerrors": True,
-                "no_warnings:": True,
+        # Create ydl_opts defaults:
+        ydl_opts = {
+            # "simulate": True,
+            "quiet": True,
+            # "verbose": True,
+            # "no_verbose_header": True,
+            # "format": "bestvideo",
+            # "ignore_no_formats_error": True,
+            # "progress": True,
+            # "progress_hooks": [my_hook],
+            "ignoreerrors": True,
+            "no_warnings:": True,
+            # "extract_flat": True,
+            'prefer_ffmpeg': True,
+            # "ffmpeg_location": "dep/ffmpeg.exe",
+            "concurrent_fragment_downloads": 4,
+            "writedescription": True,
+            "writeinfojson": True,
+            "writethumbnail": True,
+            "writesubtitles": True,
+            "allsubtitles": True,
+            "writeannotation": True,
+            "external_downloader_args": ['-loglevel quiet', '-hide_banner', '-N 6'],
+            "extractor_retries": 10,
+            "retries": 10,
+            "logger": loggerOutputs,
+            "consoletitle": True,
+            "download_archive": temp_Save_Location + "\\Videos.json"
+        }
 
-                # "extract_flat": True,
-                # 'prefer_ffmpeg': True,
-                # "ffmpeg_location": "dep/ffmpeg.exe",
-                "writedescription": True,
-                "writeinfojson": True,
-                "writethumbnail": True,
-                "writesubtitles": True,
-                "allsubtitles": True,
-                "writeannotation": True,
-                "allow_multiple_audio_streams": True,
-                "live_from_start": True,
-                # "skip_download": True,
-                "external_downloader_args": ['-loglevel quiet', '-hide_banner'],
-                "extractor_retries": 10,
-                "retries": 10,
-                "outtmpl": temp_Save_Location+"\\%(uploader)s\\%(upload_date>%Y-%m-%d)s - %(title)s - %(id)s.%(ext)s",
-                "logger": loggerOutputs,
-                "consoletitle": True
-            }
+        if page_Entry == "nrk":
+            # NRK always have the episode number in the Episode title, so no eposide_number needed.
+            ydl_opts.update({
+                "outtmpl": temp_Save_Location + "\\%(series)s\\%(season)s\\%(episode)s\\%(episode)s.%(ext)s"
+            })
+
+        elif page_Entry == "youtube":
+            ydl_opts.update({
+                "outtmpl": temp_Save_Location +"\\%(uploader)s\\%(upload_date>%Y-%m-%d)s - %(title)s - %(id)s.%(ext)s"
+            })
+
+        # Create list over downloaded media in current category:
+        if debugScript:
+            ydl_opts.update({
+                "force_write_download_archive": True,
+                "download_archive": temp_Save_Location,
+                "simulate": True
+            })
+
+        #Make sure download_archive exists:
+        if not os.path.exists(ydl_opts["download_archive"]):
+            pathlib.Path(ydl_opts["download_archive"]).mkdir(parents=True, exist_ok=True)
+
+        print()
 
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             error_code = ydl.download(download_URL)
