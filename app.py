@@ -5,11 +5,17 @@ import sys
 
 import pathlib
 import argparse
+from git.repo import Repo
 
 # TODO Auto update on start of script? Git pull or something.
+repo = Repo('./')
+print("Checking for updates...")
+gitFetch = repo.remotes.origin.fetch()
 
+xxx = repo.index.diff(None)
 
-
+for item in repo.index.diff(None):
+    print(item.a_path)
 
 debugScript = False
 
