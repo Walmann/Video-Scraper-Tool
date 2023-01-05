@@ -9,7 +9,7 @@ from git.repo import Repo
 
 
 
-
+#TODO Redo this script. I get way better controll if i give ytdlp each link instead og the whole series.
 
 debugScript = False
 RunUpdates = False
@@ -182,6 +182,8 @@ for page_Entry in URLS:
 
         # Create SaveLocation:
         if URLS[page_Entry][entries][1] == "S":
+            if sub_folder == "":
+                sub_folder = "\\TV Serier"
             temp_Save_Location = Save_Location+"\\003 - Serier" + sub_folder
         elif URLS[page_Entry][entries][1] == "M":
             temp_Save_Location = Save_Location+"\\002 - Film" + sub_folder
@@ -203,7 +205,6 @@ for page_Entry in URLS:
             # "simulate": True,
             "quiet": True,
             # "verbose": True,
-            # "no_verbose_header": True,
             # "format": "bestvideo",
             # "ignore_no_formats_error": True,
             # "progress": True,
@@ -213,26 +214,37 @@ for page_Entry in URLS:
             # "extract_flat": True,
             'prefer_ffmpeg': True,
             # "ffmpeg_location": "dep/ffmpeg.exe",
-            "concurrent_fragment_downloads": 4,
             "writedescription": True,
             "writeinfojson": True,
             "writethumbnail": True,
             "writesubtitles": True,
             "allsubtitles": True,
             "writeannotation": True,
+            "outtmpl_na_placeholder": 00,
+            # "external_downloader_args": ['-loglevel quiet', '-hide_banner'],
             "external_downloader_args": ['-loglevel quiet', '-hide_banner', '-N 6'],
+            "concurrent_fragment_downloads": 4,
             "extractor_retries": 10,
             "retries": 10,
             "logger": loggerOutputs,
             "consoletitle": True,
-            "force_write_download_archive": True,
+            # "force_write_download_archive": True,
             "download_archive": temp_Save_Location + "\\downloaded.txt",
         }
 
-        if page_Entry == "nrk":
+        if page_Entry == "nrkSerie":
             # NRK always have the episode number in the Episode title, so no eposide_number needed.
             ydl_opts.update({
-                "outtmpl": temp_Save_Location + "\\%(series)s\\%(season)s\\S%(season)sE%(episode)s.%(ext)s"
+                "allow_playlist_files": False,
+                # "outtmpl": temp_Save_Location + "\\%(series)s\\%(season)s\\%(episode)s.%(ext)s"
+                "outtmpl": temp_Save_Location + "\\%(series)s\\"+"S"+"%(season_number)02d"+"E"+"%(episode_number)s"+" - "+"%(alt_title)s.%(ext)s"
+            })
+        elif page_Entry == "nrkFilm":
+            # NRK always have the episode number in the Episode title, so no eposide_number needed.
+            ydl_opts.update({
+                "allow_playlist_files": False,
+                # "outtmpl": temp_Save_Location + "\\%(series)s\\%(season)s\\%(episode)s.%(ext)s"
+                "outtmpl": temp_Save_Location + "\\%(title)s\\%(title)s.%(ext)s"
             })
 
         elif page_Entry == "youtube":
@@ -243,17 +255,17 @@ for page_Entry in URLS:
         # Create list over downloaded media in current category:
         if debugScript:
             ydl_opts.update({
-                "force_write_download_archive": True,
-                "download_archive": temp_Save_Location + "\\downloaded.txt",
-                "simulate": True
+                "skipdownload": True,
+                "quiet": False,
+                "no_warnings:": False,
             })
 
         # #Make sure download_archive exists:
         # if not os.path.exists(ydl_opts["download_archive"]):
         #     pathlib.Path(ydl_opts["download_archive"]).mkdir(parents=True, exist_ok=True)
 
-        # print()
-
+        print()
+        # print(ydl_opts)
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             error_code = ydl.download(download_URL)
         print("")
