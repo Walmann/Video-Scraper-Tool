@@ -46,6 +46,7 @@ if not args.DoNotUpdate == None:
 if not RunUpdates == False: 
     repo = Repo('./')
     print("Checking for updates...")
+    repo.git.reset('--hard')
     repo.remotes.origin.pull()
 
 
